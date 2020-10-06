@@ -4,15 +4,5 @@ using UnityEngine;
 
 public class SpeechConverter : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    //some function that outputs voice input as string
 }
