@@ -68,11 +68,11 @@ public class ListeningState : GameState
 {
     public override void Enter()
     {
-        // PlayLoop(audioLoop[currentPuzzle], Mode.A, currentPositionInLoop)
+        // PlayLoop(audioLoop[currentPuzzle], currentPositionInLoop)
     }
     public override void Update()
     {
-        // wait for user 'yes' input
+        // wait for user input
         if (Input.GetKeyDown(gm.speechInput))
         {
             // pause audio clip
