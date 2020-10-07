@@ -4,16 +4,41 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    int currentPuzzle = 0;
     
-    void Start()
+    private static GameManager instance;
+    public static GameManager Instance
     {
-        // initialize FSM
+        get
+        {
+            return instance;
+        }
     }
 
-    void Update()
-    {
-        // run FSM
+    private GameFSM fsm;
 
+    int currentPuzzle = 0;
+    public KeyCode speechInput = KeyCode.Space;
+
+    private void Awake()
+    {
+        instance = this;
+
+        fsm = new GameFSM();
+        fsm.Initialize(this);
+
+        fsm.AddState(GameStateType.Start, new StartState());
+        fsm.AddState(GameStateType.Intro, new IntroState());
+        fsm.AddState(GameStateType.Listening, new ListeningState());
+        fsm.AddState(GameStateType.Correct, new CorrectState());
+    }
+
+    private void Start()
+    {
+        fsm.GotoState(GameStateType.Start);
+    }
+
+    private void Update()
+    {
+        fsm.UpdateState();
     }
 }
