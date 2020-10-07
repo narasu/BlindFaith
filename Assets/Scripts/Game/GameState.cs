@@ -21,28 +21,42 @@ public abstract class GameState
 //StartState - start of game. Input instructions
 public class StartState : GameState
 {
+    float t = 0f;
+    
     public override void Enter()
     {
-        // PlaySound(intro)
+        
     }
     public override void Update()
     {
+        t += Time.deltaTime;
 
+        if (t >= Guard.Instance.GetClipLength())
+            owner.GotoState(GameStateType.Intro);
     }
     public override void Exit()
     {
-
+        Guard.Instance.StopTalking();
     }
 }
 // IntroState - introduction of puzzle + instructions, maybe some narrative exposition
 public class IntroState : GameState
 {
+    float t = 0;
+    string response = "";
     public override void Enter()
     {
-        // PlaySound(intro[currentPuzzle])
+        Guard.Instance.StartIntro(gm.CurrentPuzzle);
     }
     public override void Update()
     {
+        t += Time.deltaTime;
+
+        if (t >= Guard.Instance.GetClipLength() + 0.5f)
+        {
+            response = "yes";
+        }
+        /*
         // wait for user 'yes' input
         if (Input.GetKeyDown(gm.speechInput))
         {
@@ -55,20 +69,30 @@ public class IntroState : GameState
             //check string
             // if yes { goto ListeningState }
             // if no { play intro again }
+        }*/
+        if (response == "yes")
+            owner.GotoState(GameStateType.Listening);
+        if (response == "no")
+        {
+            response = "";
+            t = 0;
+            Guard.Instance.StartIntro(gm.CurrentPuzzle);
         }
-        
     }
     public override void Exit()
     {
-
+        Guard.Instance.StopTalking();
     }
 }
 // ListeningState - user is listening to sound fragment
 public class ListeningState : GameState
 {
+    float t = 0;
+    string response = "";
+
     public override void Enter()
     {
-        // PlayLoop(audioLoop[currentPuzzle], currentPositionInLoop)
+        Puzzle.Instance.StartPuzzle(gm.CurrentPuzzle);
     }
     public override void Update()
     {
@@ -92,12 +116,11 @@ public class ListeningState : GameState
         
     }
 }
-
 public class CorrectState : GameState
 {
     public override void Enter()
     {
-        // PlaySound(correct)
+        
     }
     public override void Update()
     {

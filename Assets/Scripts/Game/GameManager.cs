@@ -14,9 +14,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private int currentPuzzle = 0;
+    public int CurrentPuzzle { get => currentPuzzle; set => currentPuzzle = value; }
+
     private GameFSM fsm;
 
-    int currentPuzzle = 0;
+    
     public KeyCode speechInput = KeyCode.Space;
 
     private void Awake()
@@ -41,4 +44,6 @@ public class GameManager : MonoBehaviour
     {
         fsm.UpdateState();
     }
+
+    
 }

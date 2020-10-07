@@ -4,13 +4,24 @@ using UnityEngine;
 
 public class Puzzle : MonoBehaviour
 {
+    private static Puzzle instance;
+    public static Puzzle Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
+
     private AudioSource audioSource;
 
-    public Dictionary<int, AudioClip> puzzleClips; // puzzle audio fragments
-    public Dictionary<int, string> puzzleAnswers; // expected answers for each puzzle
+    public List<AudioClip> puzzleClips; // puzzle audio fragments
+    public List<string> puzzleAnswers; // expected answers for each puzzle
 
     private void Awake()
     {
+        instance = this;
+        
         audioSource = GetComponent<AudioSource>();
         audioSource.playOnAwake = false;
         audioSource.loop = true;
