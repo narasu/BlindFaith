@@ -52,6 +52,11 @@ public class Puzzle : MonoBehaviour
         audioSource.UnPause();
     }
 
+    public void StopAudio()
+    {
+        audioSource.Stop();
+    }
+
     public void SetVolume(float _volume)
     {
         audioSource.volume = _volume;

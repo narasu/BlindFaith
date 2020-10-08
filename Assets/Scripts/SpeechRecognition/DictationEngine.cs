@@ -15,6 +15,15 @@ using UnityEngine.Windows.Speech;
 /// </summary>
 public class DictationEngine : MonoBehaviour
 {
+    private static DictationEngine instance;
+    public static DictationEngine Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
+
     public Text ResultedText;
 
     protected DictationRecognizer dictationRecognizer;
@@ -27,10 +36,15 @@ public class DictationEngine : MonoBehaviour
 
     private bool isUserSpeaking;
 
+    private void Awake()
+    {
+        instance = this;
+    }
+    /*
     void Start()
     {
-        
-    }
+        OnPhraseRecognized.AddListener(GameManager.Instance.SetSpeechText);
+    }*/
 
     /// <summary>
     /// Hypotethis are thrown super fast, but could have mistakes.
@@ -116,7 +130,12 @@ public class DictationEngine : MonoBehaviour
         CloseDictationEngine();
     }
 
-    private void StartDictationEngine()
+    private void OnDestroy()
+    {
+        CloseDictationEngine();
+    }
+
+    public void StartDictationEngine()
     {
         isUserSpeaking = false;
 
@@ -130,7 +149,7 @@ public class DictationEngine : MonoBehaviour
         dictationRecognizer.Start();
     }
 
-    private void CloseDictationEngine()
+    public void CloseDictationEngine()
     {
         if (dictationRecognizer != null)
         {
