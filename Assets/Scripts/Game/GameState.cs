@@ -133,8 +133,6 @@ public class ListeningState : GameState
                 gm.SetSpeechText(null);
                 timeElapsed = 0f;
             }
-            
-            
         }
 
     }
@@ -142,16 +140,26 @@ public class ListeningState : GameState
     {
         Puzzle.Instance.StopAudio();
         gm.SetSpeechText(null);
+        DictationEngine.Instance.CloseDictationEngine();
     }
 }
 public class CorrectState : GameState
 {
+    float t = 0;
+    bool done = false;
     public override void Enter()
     {
         Guard.Instance.EvaluateAnswer(true);
     }
     public override void Update()
     {
+        t += Time.deltaTime;
+        if (t >= Guard.Instance.GetClipLength() + 0.5f && !done)
+        {
+            done = true;
+            Debug.Log("done");
+            Puzzle.Instance.PlayDemoEndClip();
+        }
         // when sound is done playing, increment currentPuzzle and goto IntroState
     }
     public override void Exit()

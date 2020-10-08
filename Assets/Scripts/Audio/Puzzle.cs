@@ -18,6 +18,8 @@ public class Puzzle : MonoBehaviour
     public List<AudioClip> puzzleClips; // puzzle audio fragments
     public List<string> puzzleAnswers; // expected answers for each puzzle
 
+    public AudioClip endOfDemo;
+
     private void Awake()
     {
         instance = this;
@@ -40,6 +42,13 @@ public class Puzzle : MonoBehaviour
             return true;
         else
             return false;
+    }
+
+    public void PlayDemoEndClip()
+    {
+        audioSource.loop = false;
+        audioSource.clip = endOfDemo;
+        audioSource.Play();
     }
 
     public void Pause()
