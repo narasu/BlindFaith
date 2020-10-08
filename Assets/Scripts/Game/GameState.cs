@@ -21,86 +21,145 @@ public abstract class GameState
 //StartState - start of game. Input instructions
 public class StartState : GameState
 {
+    float t = 0f;
+    
     public override void Enter()
     {
-        // PlaySound(intro)
+        
     }
     public override void Update()
     {
+        t += Time.deltaTime;
+
+        if (t >= Guard.Instance.GetClipLength() + 0.5f || Input.GetKeyDown(KeyCode.RightArrow))
+            owner.GotoState(GameStateType.Intro);
+
 
     }
     public override void Exit()
     {
-
+        Guard.Instance.StopTalking();
     }
 }
 // IntroState - introduction of puzzle + instructions, maybe some narrative exposition
 public class IntroState : GameState
 {
+    bool dict = false;
+    float timeElapsed = 0f;
     public override void Enter()
     {
-        // PlaySound(intro[currentPuzzle])
+        Guard.Instance.StartIntro(gm.CurrentPuzzle);
+        gm.SetSpeechText(null);
     }
     public override void Update()
     {
-        // wait for user 'yes' input
-        if (Input.GetKeyDown(gm.speechInput))
+        timeElapsed += Time.deltaTime;
+        /*
+        // start voice input
+        if (Input.GetKeyDown(gm.speechInput) && !dict)
         {
             // StartSpeech()
+            DictationEngine.Instance.StartDictationEngine();
+            dict = true;
         }
 
-        if (Input.GetKeyUp(gm.speechInput))
+        //check if user has said anything so far
+        if (gm.GetSpeechText() != null)
         {
-            // EndSpeech()
-            //check string
-            // if yes { goto ListeningState }
-            // if no { play intro again }
+            if (gm.GetSpeechText() == "yes")
+            {
+                owner.GotoState(GameStateType.Listening);
+            }
+            if (gm.GetSpeechText() == "no")
+            {
+                Guard.Instance.Repeat();
+            }
+            gm.SetSpeechText(null);
+            timeElapsed = 0f;
         }
-        
+        */
+        // go to next state after clip is done
+        if (timeElapsed >= Guard.Instance.GetClipLength() + 0.5f || Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            /*timeElapsed = 0f;
+            Guard.Instance.Repeat();
+            */
+            owner.GotoState(GameStateType.Listening);
+        }
     }
     public override void Exit()
     {
-
+        Guard.Instance.StopTalking();
+        //DictationEngine.Instance.CloseDictationEngine();
     }
 }
 // ListeningState - user is listening to sound fragment
 public class ListeningState : GameState
 {
+    float timeElapsed = 0f;
+    bool dict = false;
+
     public override void Enter()
     {
-        // PlayLoop(audioLoop[currentPuzzle], Mode.A, currentPositionInLoop)
+        Puzzle.Instance.StartPuzzle(gm.CurrentPuzzle);
     }
     public override void Update()
     {
-        // wait for user 'yes' input
+        timeElapsed += Time.deltaTime;
+
+        // start voice input
         if (Input.GetKeyDown(gm.speechInput))
         {
-            // pause audio clip
-            // StartSpeech(out string)
+            if (!dict)
+            {
+                DictationEngine.Instance.StartDictationEngine();
+                dict = true;
+            }
+            Puzzle.Instance.SetVolume(0.2f);
         }
 
-        if (Input.GetKeyUp(gm.speechInput))
+        //check if user has given the correct answer
+        if (gm.GetSpeechText() != null)
         {
-            // EndSpeech()
-            // check string
-            // if correct { goto CorrectState }
-            // if wrong { play wrong-answer feedback, then resume audio clip }
+            if (gm.GetSpeechText() == "ritual")
+            {
+                owner.GotoState(GameStateType.Correct);
+            }
+            else
+            {
+                Guard.Instance.EvaluateAnswer(false);
+                Puzzle.Instance.SetVolume(0.7f);
+                Debug.Log("WRONG");
+                gm.SetSpeechText(null);
+                timeElapsed = 0f;
+            }
         }
+
     }
     public override void Exit()
     {
-        
+        Puzzle.Instance.StopAudio();
+        gm.SetSpeechText(null);
+        DictationEngine.Instance.CloseDictationEngine();
     }
 }
-
 public class CorrectState : GameState
 {
+    float t = 0;
+    bool done = false;
     public override void Enter()
     {
-        // PlaySound(correct)
+        Guard.Instance.EvaluateAnswer(true);
     }
     public override void Update()
     {
+        t += Time.deltaTime;
+        if (t >= Guard.Instance.GetClipLength() + 0.5f && !done)
+        {
+            done = true;
+            Debug.Log("done");
+            Puzzle.Instance.PlayDemoEndClip();
+        }
         // when sound is done playing, increment currentPuzzle and goto IntroState
     }
     public override void Exit()

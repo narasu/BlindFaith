@@ -14,15 +14,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private GameFSM fsm;
+    private int currentPuzzle = 0;
+    public int CurrentPuzzle { get => currentPuzzle; set => currentPuzzle = value; }
 
-    int currentPuzzle = 0;
+    private GameFSM fsm;
+    
     public KeyCode speechInput = KeyCode.Space;
+
+    private string speechText;
 
     private void Awake()
     {
         instance = this;
-
+        
         fsm = new GameFSM();
         fsm.Initialize(this);
 
@@ -35,10 +39,23 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         fsm.GotoState(GameStateType.Start);
+        
     }
 
     private void Update()
     {
         fsm.UpdateState();
     }
+
+    public void SetSpeechText(string s)
+    {
+        speechText = s;
+        Debug.Log(speechText);
+    }
+
+    public string GetSpeechText()
+    {
+        return speechText;
+    }
+
 }
