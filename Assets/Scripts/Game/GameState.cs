@@ -31,7 +31,7 @@ public class StartState : GameState
     {
         t += Time.deltaTime;
 
-        if (t >= Guard.Instance.GetClipLength() + 0.5f || Input.GetKeyDown(KeyCode.RightArrow))
+        if (t >= Guard.Instance.GetClipLength() + 0.5f /*|| Input.GetKeyDown(KeyCode.RightArrow)*/)
             owner.GotoState(GameStateType.Intro);
 
 
@@ -79,7 +79,7 @@ public class IntroState : GameState
         }
         */
         // go to next state after clip is done
-        if (timeElapsed >= Guard.Instance.GetClipLength() + 0.5f || Input.GetKeyDown(KeyCode.RightArrow))
+        if (timeElapsed >= Guard.Instance.GetClipLength() + 0.5f/* || Input.GetKeyDown(KeyCode.RightArrow)*/)
         {
             /*timeElapsed = 0f;
             Guard.Instance.Repeat();
