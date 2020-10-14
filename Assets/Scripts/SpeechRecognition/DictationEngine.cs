@@ -74,8 +74,10 @@ public class DictationEngine : MonoBehaviour
                 case DictationCompletionCause.TimeoutExceeded:
                 case DictationCompletionCause.PauseLimitExceeded:
                     //we need a restart
+                    
                     CloseDictationEngine();
-                    StartDictationEngine();
+                    Guard.Instance.OnDidntCatch.Invoke();
+                    //StartDictationEngine();  <-- commented out because we're gonna wait for user to press space again
                     break;
 
                 case DictationCompletionCause.UnknownError:
@@ -136,10 +138,11 @@ public class DictationEngine : MonoBehaviour
     {
         isOpened = true;
         isUserSpeaking = false;
-
+        Debug.Log("Started");
         OnPhraseRecognized.AddListener(GameManager.Instance.SetSpeechText);
 
         dictationRecognizer = new DictationRecognizer();
+        dictationRecognizer.AutoSilenceTimeoutSeconds = 5.0f;
 
         dictationRecognizer.DictationHypothesis += DictationRecognizer_OnDictationHypothesis;
         dictationRecognizer.DictationResult += DictationRecognizer_OnDictationResult;
@@ -151,10 +154,10 @@ public class DictationEngine : MonoBehaviour
 
     public void CloseDictationEngine()
     {
-        isOpened = false;
-
         if (dictationRecognizer != null)
         {
+            isOpened = false;
+            Debug.Log("closed");
             OnPhraseRecognized.RemoveAllListeners();
             dictationRecognizer.DictationHypothesis -= DictationRecognizer_OnDictationHypothesis;
             dictationRecognizer.DictationComplete -= DictationRecognizer_OnDictationComplete;

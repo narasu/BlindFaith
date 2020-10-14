@@ -30,25 +30,18 @@ public class StartState : GameState
     }
     public override void Update()
     {
-        /*
-        t += Time.deltaTime;
-
-        if (t >= 7.5f)
-        {
-            Guard.Instance.OnTimeout.Invoke();
-        }*/
-
         // start voice input
         if (Input.GetKeyDown(gm.speechInput) && !DictationEngine.Instance.isOpened)
         {
             DictationEngine.Instance.StartDictationEngine();
+            Debug.Log("Listening...");
         }
 
         //check if user has said anything so far
         if (gm.SpeechText != null)
         {
-            
-            Guard.Instance.StartCoroutine(Guard.Instance.ReactToSpeech(gm.SpeechText));
+            DictationEngine.Instance.CloseDictationEngine();
+            Guard.Instance.ProcessSpeech(gm.SpeechText);
             gm.SetSpeechText(null);
         }
 

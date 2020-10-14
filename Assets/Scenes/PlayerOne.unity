@@ -535,7 +535,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startAudio:
-  - {fileID: 8300000, guid: 10b062c1c05dd0042b5a0a433dc3a2c8, type: 3}
+  - {fileID: 8300000, guid: 019bc18d868fa4e4f88562acdb7eaf4c, type: 3}
   - {fileID: 8300000, guid: 10b062c1c05dd0042b5a0a433dc3a2c8, type: 3}
   - {fileID: 8300000, guid: 10b062c1c05dd0042b5a0a433dc3a2c8, type: 3}
   puzzleIntros:
@@ -546,6 +546,7 @@ MonoBehaviour:
   goodFeedback: {fileID: 8300000, guid: 10b062c1c05dd0042b5a0a433dc3a2c8, type: 3}
   wrong: {fileID: 8300000, guid: 1fbfeea10ee20c3448eab69662f9b3f5, type: 3}
   correct: {fileID: 8300000, guid: 7302c83ac46005147bbb57361e2047d2, type: 3}
+  isListening: 0
   timeOutLimit: 10
 --- !u!82 &1114174879
 AudioSource:

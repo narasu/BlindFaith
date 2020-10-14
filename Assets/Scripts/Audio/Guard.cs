@@ -33,11 +33,10 @@ public class Guard : MonoBehaviour
     
     internal bool introFinished;
     bool continueLoop = false;
+    public bool isListening;
     public float timeOutLimit = 10.0f;
     int currentSegment = 0;
 
-    internal UnityEvent OnUnderstood;
-    internal UnityEvent OnNotUnderstood;
     internal UnityEvent OnDidntCatch;
     internal UnityEvent OnTimeout;
 
@@ -49,14 +48,10 @@ public class Guard : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         audioSource.loop = false;
 
-        OnUnderstood = new UnityEvent();
-        OnNotUnderstood = new UnityEvent();
         OnDidntCatch = new UnityEvent();
         OnTimeout = new UnityEvent();
 
-        OnUnderstood.AddListener(() => GotoNextSegment());
-        OnNotUnderstood.AddListener(() => StartCoroutine(IntroduceGame()));
-        OnDidntCatch.AddListener(() => ListenAgain());
+        OnDidntCatch.AddListener(() => StartCoroutine(React(2)));
         OnTimeout.AddListener(() => continueLoop = true);
 
         StartCoroutine(IntroduceGame());
@@ -79,23 +74,13 @@ public class Guard : MonoBehaviour
             audioSource.clip = understand;
             audioSource.Play();
 
-            //Wait for player's response
-            IEnumerator timer = Timer();
-            //StartCoroutine(timer);
-            yield return new WaitUntil(() => continueLoop==true); // either GameManager.SpeechText has been filled, or x time has passed
-            //StopCoroutine(timer);
+            yield return new WaitUntil(() => continueLoop == true);
         }
 
         GameManager.Instance.OnInstructionFinished.Invoke();
     }
 
-    IEnumerator Timer()
-    {
-        Debug.Log("Timer started");
-        yield return new WaitForSeconds(timeOutLimit);
-        Debug.Log("Timer ended");
-        OnTimeout.Invoke();
-    }
+    
 
     void GotoNextSegment()
     {
@@ -103,43 +88,50 @@ public class Guard : MonoBehaviour
         continueLoop = true;
     }
 
-    void ListenAgain()
-    {
-        //reset dictation engine
-        DictationEngine.Instance.CloseDictationEngine();
-        DictationEngine.Instance.StartDictationEngine();
-    }
-
     //react to user speech
-    public IEnumerator ReactToSpeech(string _speech)
+    public void ProcessSpeech(string _speech)
     {
         StopTalking();
+
         if (_speech == "i understand" || _speech == "yes")
         {
-            DictationEngine.Instance.CloseDictationEngine();
-            audioSource.PlayOneShot(goodFeedback);
-            yield return new WaitForSeconds(goodFeedback.length + 0.2f);
-            Debug.Log("Good");
-            OnUnderstood.Invoke();
-            yield break;
+            StartCoroutine(React(0));
         }
         else if (_speech == "i don't understand" || _speech == "no")
         {
-            DictationEngine.Instance.CloseDictationEngine();
-            Debug.Log("I repeat");
-            audioSource.PlayOneShot(repeat);
-            yield return new WaitForSeconds(repeat.length + 0.2f);
-            OnNotUnderstood.Invoke();
-            yield break;
+            StartCoroutine(React(1));
         }
         else
         {
-            Debug.Log("I didn't catch that");
-            audioSource.PlayOneShot(didntCatch);
-            yield return new WaitForSeconds(didntCatch.length);
-            OnDidntCatch.Invoke();
+            StartCoroutine(React(2));
         }
     }
+
+    IEnumerator React(int i)
+    {
+        switch (i)
+        {
+            case 0:
+                audioSource.PlayOneShot(goodFeedback);
+                yield return new WaitForSeconds(goodFeedback.length + 0.2f);
+                Debug.Log("Good");
+                GotoNextSegment();
+                yield break;
+            case 1:
+                Debug.Log("I repeat");
+                audioSource.PlayOneShot(repeat);
+                yield return new WaitForSeconds(repeat.length + 0.2f);
+                continueLoop = true;
+                yield break;
+            case 2:
+                Debug.Log("I didn't catch that");
+                audioSource.PlayOneShot(didntCatch);
+                yield return new WaitForSeconds(didntCatch.length);
+                yield break;
+        }
+    }
+
+
     //start the introduction to specified puzzle
     public void IntroducePuzzle(int _currentPuzzle)
     {
@@ -171,14 +163,12 @@ public class Guard : MonoBehaviour
 
     private void OnDestroy()
     {
-        OnUnderstood.RemoveAllListeners();
-        OnNotUnderstood.RemoveAllListeners();
         OnDidntCatch.RemoveAllListeners();
+        OnTimeout.RemoveAllListeners();
     }
     private void OnApplicationQuit()
     {
-        OnUnderstood.RemoveAllListeners();
-        OnNotUnderstood.RemoveAllListeners();
         OnDidntCatch.RemoveAllListeners();
+        OnTimeout.RemoveAllListeners();
     }
 }
