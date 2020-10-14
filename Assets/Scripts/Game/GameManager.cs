@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,13 +16,18 @@ public class GameManager : MonoBehaviour
     }
 
     private int currentPuzzle = 0;
+    private string speechText;
+    private string correctPhrase;
+
     public int CurrentPuzzle { get => currentPuzzle; set => currentPuzzle = value; }
+    public string SpeechText { get => speechText; set => speechText = value; }
+    public string CorrectPhrase { get => correctPhrase; set => correctPhrase = value; }
 
     private GameFSM fsm;
     
     public KeyCode speechInput = KeyCode.Space;
 
-    private string speechText;
+    public UnityEvent OnInstructionFinished;
 
     private void Awake()
     {
@@ -34,12 +40,13 @@ public class GameManager : MonoBehaviour
         fsm.AddState(GameStateType.Intro, new IntroState());
         fsm.AddState(GameStateType.Listening, new ListeningState());
         fsm.AddState(GameStateType.Correct, new CorrectState());
+
+        OnInstructionFinished.AddListener(() => fsm.GotoState(GameStateType.Intro));
     }
 
     private void Start()
     {
         fsm.GotoState(GameStateType.Start);
-        
     }
 
     private void Update()
@@ -47,15 +54,19 @@ public class GameManager : MonoBehaviour
         fsm.UpdateState();
     }
 
-    public void SetSpeechText(string s)
+    public bool IsPhraseCorrect()
     {
-        speechText = s;
-        Debug.Log(speechText);
+        return speechText == correctPhrase;
     }
 
-    public string GetSpeechText()
-    {
-        return speechText;
-    }
+    public void SetSpeechText(string s) => speechText = s;
 
+    private void OnDestroy()
+    {
+        OnInstructionFinished.RemoveAllListeners();
+    }
+    private void OnApplicationQuit()
+    {
+        OnInstructionFinished.RemoveAllListeners();
+    }
 }

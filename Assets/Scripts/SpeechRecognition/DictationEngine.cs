@@ -36,15 +36,12 @@ public class DictationEngine : MonoBehaviour
 
     private bool isUserSpeaking;
 
+    public bool isOpened = false;
+
     private void Awake()
     {
         instance = this;
     }
-    /*
-    void Start()
-    {
-        OnPhraseRecognized.AddListener(GameManager.Instance.SetSpeechText);
-    }*/
 
     /// <summary>
     /// Hypotethis are thrown super fast, but could have mistakes.
@@ -137,7 +134,10 @@ public class DictationEngine : MonoBehaviour
 
     public void StartDictationEngine()
     {
+        isOpened = true;
         isUserSpeaking = false;
+
+        OnPhraseRecognized.AddListener(GameManager.Instance.SetSpeechText);
 
         dictationRecognizer = new DictationRecognizer();
 
@@ -151,8 +151,11 @@ public class DictationEngine : MonoBehaviour
 
     public void CloseDictationEngine()
     {
+        isOpened = false;
+
         if (dictationRecognizer != null)
         {
+            OnPhraseRecognized.RemoveAllListeners();
             dictationRecognizer.DictationHypothesis -= DictationRecognizer_OnDictationHypothesis;
             dictationRecognizer.DictationComplete -= DictationRecognizer_OnDictationComplete;
             dictationRecognizer.DictationResult -= DictationRecognizer_OnDictationResult;
