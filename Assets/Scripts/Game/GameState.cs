@@ -18,79 +18,71 @@ public abstract class GameState
     public abstract void Update();
     public abstract void Exit();
 }
-//StartState - start of game. Input instructions
+//StartState - start of game
 public class StartState : GameState
 {
     float t = 0f;
-    
+    bool dict = false;
+
     public override void Enter()
     {
         
     }
     public override void Update()
     {
+        /*
         t += Time.deltaTime;
 
-        if (t >= Guard.Instance.GetClipLength() + 0.5f /*|| Input.GetKeyDown(KeyCode.RightArrow)*/)
-            owner.GotoState(GameStateType.Intro);
+        if (t >= 7.5f)
+        {
+            Guard.Instance.OnTimeout.Invoke();
+        }*/
 
+        // start voice input
+        if (Input.GetKeyDown(gm.speechInput) && !DictationEngine.Instance.isOpened)
+        {
+            DictationEngine.Instance.StartDictationEngine();
+        }
+
+        //check if user has said anything so far
+        if (gm.SpeechText != null)
+        {
+            
+            Guard.Instance.StartCoroutine(Guard.Instance.ReactToSpeech(gm.SpeechText));
+            gm.SetSpeechText(null);
+        }
 
     }
     public override void Exit()
     {
+        Guard.Instance.StopAllCoroutines();
         Guard.Instance.StopTalking();
     }
 }
-// IntroState - introduction of puzzle + instructions, maybe some narrative exposition
+// IntroState - introduction of puzzle, instructions, maybe some narrative exposition
 public class IntroState : GameState
 {
     bool dict = false;
     float timeElapsed = 0f;
     public override void Enter()
     {
-        Guard.Instance.StartIntro(gm.CurrentPuzzle);
-        gm.SetSpeechText(null);
+        Guard.Instance.IntroducePuzzle(gm.CurrentPuzzle);
+        gm.SpeechText = null;
     }
     public override void Update()
     {
         timeElapsed += Time.deltaTime;
-        /*
-        // start voice input
-        if (Input.GetKeyDown(gm.speechInput) && !dict)
-        {
-            // StartSpeech()
-            DictationEngine.Instance.StartDictationEngine();
-            dict = true;
-        }
-
-        //check if user has said anything so far
-        if (gm.GetSpeechText() != null)
-        {
-            if (gm.GetSpeechText() == "yes")
-            {
-                owner.GotoState(GameStateType.Listening);
-            }
-            if (gm.GetSpeechText() == "no")
-            {
-                Guard.Instance.Repeat();
-            }
-            gm.SetSpeechText(null);
-            timeElapsed = 0f;
-        }
-        */
+        
         // go to next state after clip is done
-        if (timeElapsed >= Guard.Instance.GetClipLength() + 0.5f/* || Input.GetKeyDown(KeyCode.RightArrow)*/)
+        if (timeElapsed >= Guard.Instance.GetClipLength() + 0.5f)
         {
-            /*timeElapsed = 0f;
-            Guard.Instance.Repeat();
-            */
             owner.GotoState(GameStateType.Listening);
         }
     }
     public override void Exit()
     {
         Guard.Instance.StopTalking();
-        //DictationEngine.Instance.CloseDictationEngine();
+        DictationEngine.Instance.CloseDictationEngine();
     }
 }
 // ListeningState - user is listening to sound fragment
@@ -119,9 +111,9 @@ public class ListeningState : GameState
         }
 
         //check if user has given the correct answer
-        if (gm.GetSpeechText() != null)
+        if (gm.SpeechText != null)
         {
-            if (gm.GetSpeechText() == "ritual")
+            if (gm.IsPhraseCorrect())
             {
                 owner.GotoState(GameStateType.Correct);
             }
@@ -130,7 +122,7 @@ public class ListeningState : GameState
                 Guard.Instance.EvaluateAnswer(false);
                 Puzzle.Instance.SetVolume(0.7f);
                 Debug.Log("WRONG");
-                gm.SetSpeechText(null);
+                gm.SpeechText = null;
                 timeElapsed = 0f;
             }
         }
@@ -139,10 +131,11 @@ public class ListeningState : GameState
     public override void Exit()
     {
         Puzzle.Instance.StopAudio();
-        gm.SetSpeechText(null);
+        gm.SpeechText = null;
         DictationEngine.Instance.CloseDictationEngine();
     }
 }
+
 public class CorrectState : GameState
 {
     float t = 0;
