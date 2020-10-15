@@ -77,6 +77,7 @@ public class DictationEngine : MonoBehaviour
                     
                     CloseDictationEngine();
                     Guard.Instance.OnDidntCatch.Invoke();
+                    
                     //StartDictationEngine();  <-- commented out because we're gonna wait for user to press space again
                     break;
 
@@ -138,6 +139,9 @@ public class DictationEngine : MonoBehaviour
     {
         isOpened = true;
         isUserSpeaking = false;
+
+        GameManager.Instance.InputStart();
+
         Debug.Log("Started");
         OnPhraseRecognized.AddListener(GameManager.Instance.SetSpeechText);
 

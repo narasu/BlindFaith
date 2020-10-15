@@ -110,7 +110,7 @@ public class Guard : MonoBehaviour
         {
             StartCoroutine(React(0));
         }
-        else if (_speech == "i don't understand" || _speech == "no")
+        else if (_speech == "i don't understand" || _speech == "i don't get it" || _speech == "no")
         {
             StartCoroutine(React(1));
         }
@@ -125,6 +125,8 @@ public class Guard : MonoBehaviour
         switch (i)
         {
             case 0:
+                GameManager.Instance.InputGood();
+                yield return new WaitForSeconds(1.0f);
                 audioSource.PlayOneShot(goodFeedback);
                 yield return new WaitForSeconds(goodFeedback.length + 0.6f);
                 Debug.Log("Good");
@@ -137,6 +139,8 @@ public class Guard : MonoBehaviour
                 continueLoop = true;
                 yield break;
             case 2:
+                GameManager.Instance.InputBad();
+                yield return new WaitForSeconds(0.5f);
                 Debug.Log("I didn't catch that");
                 audioSource.PlayOneShot(didntCatch);
                 yield return new WaitForSeconds(didntCatch.length);
