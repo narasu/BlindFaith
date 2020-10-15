@@ -29,13 +29,21 @@ public class GameManager : MonoBehaviour
 
     public UnityEvent OnInstructionFinished;
 
+    AudioSource audioSource;
+
+    public AudioClip inputStart;
+    public AudioClip inputGood;
+    public AudioClip inputBad;
+
     public bool checkingTimeOut;
     public float timeOutTimer;
 
     private void Awake()
     {
         instance = this;
-        
+
+        audioSource = GetComponent<AudioSource>();
+
         fsm = new GameFSM();
         fsm.Initialize(this);
 
@@ -55,6 +63,22 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         fsm.UpdateState();
+    }
+
+    public void InputStart()
+    {
+        audioSource.clip = inputStart;
+        audioSource.Play();
+    }
+    public void InputGood()
+    {
+        audioSource.clip = inputGood;
+        audioSource.Play();
+    }
+    public void InputBad()
+    {
+        audioSource.clip = inputBad;
+        audioSource.Play();
     }
 
     public bool IsPhraseCorrect()

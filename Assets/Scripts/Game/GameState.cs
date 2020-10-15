@@ -121,6 +121,7 @@ public class ListeningState : GameState
             else
             {
                 DictationEngine.Instance.CloseDictationEngine();
+                gm.InputBad();
                 Guard.Instance.EvaluateAnswer(false);
                 Puzzle.Instance.StartCoroutine(Puzzle.Instance.Unpause());
                 Debug.Log("WRONG");
@@ -146,6 +147,7 @@ public class CorrectState : GameState
         done = false;
         t = 0f;
         Guard.Instance.EvaluateAnswer(true);
+        gm.InputGood();
     }
     public override void Update()
     {
