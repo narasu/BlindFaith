@@ -492,6 +492,8 @@ MonoBehaviour:
   OnInstructionFinished:
     m_PersistentCalls:
       m_Calls: []
+  checkingTimeOut: 0
+  timeOutTimer: 0
 --- !u!4 &870054549
 Transform:
   m_ObjectHideFlags: 0
@@ -538,8 +540,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   congrats: {fileID: 8300000, guid: 909498b98d41b2448b24d148bcafff43, type: 3}
   startAudio:
-  - {fileID: 8300000, guid: 10b062c1c05dd0042b5a0a433dc3a2c8, type: 3}
-  - {fileID: 8300000, guid: 10b062c1c05dd0042b5a0a433dc3a2c8, type: 3}
+  - {fileID: 8300000, guid: 019bc18d868fa4e4f88562acdb7eaf4c, type: 3}
+  - {fileID: 8300000, guid: 7f3fe823a4716b740873eb2847ce7d80, type: 3}
   puzzleIntros:
   - {fileID: 8300000, guid: d9f481dded3de554bbaadf36310b8618, type: 3}
   - {fileID: 8300000, guid: 67481dc721b4b4643ad501e4ce246d0e, type: 3}
@@ -551,7 +553,7 @@ MonoBehaviour:
   correct: {fileID: 8300000, guid: 7302c83ac46005147bbb57361e2047d2, type: 3}
   readyToListen: 0
   isListening: 0
-  timeOutLimit: 10
+  timeOutLimit: 15
 --- !u!82 &1114174879
 AudioSource:
   m_ObjectHideFlags: 0

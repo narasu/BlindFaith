@@ -21,15 +21,29 @@ public abstract class GameState
 //StartState - start of game
 public class StartState : GameState
 {
+    
     public override void Enter()
     {
-        
+        gm.timeOutTimer = 0f;
+        gm.checkingTimeOut = false;
     }
     public override void Update()
     {
+        if (gm.checkingTimeOut)
+        {
+            gm.timeOutTimer += Time.deltaTime;
+        }
+
+        if (gm.checkingTimeOut && gm.timeOutTimer >= Guard.Instance.timeOutLimit)
+        {
+            Guard.Instance.OnTimeout.Invoke();
+            gm.checkingTimeOut = false;
+        }
+
         // start voice input
         if (Input.GetKeyDown(gm.speechInput) && !DictationEngine.Instance.isOpened && Guard.Instance.readyToListen)
         {
+            gm.checkingTimeOut = false;
             DictationEngine.Instance.StartDictationEngine();
             Debug.Log("Listening...");
         }
@@ -53,6 +67,7 @@ public class StartState : GameState
 public class IntroState : GameState
 {
     float timeElapsed;
+
     public override void Enter()
     {
         Guard.Instance.IntroducePuzzle(gm.CurrentPuzzle);
@@ -77,8 +92,8 @@ public class IntroState : GameState
 // ListeningState - user is listening to sound fragment
 public class ListeningState : GameState
 {
-    float timeElapsed = 0f;
-    bool dict = false;
+    
+    
 
     public override void Enter()
     {
@@ -88,8 +103,7 @@ public class ListeningState : GameState
     }
     public override void Update()
     {
-        timeElapsed += Time.deltaTime;
-
+        
         // start voice input
         if (Input.GetKeyDown(gm.speechInput) && !DictationEngine.Instance.isOpened)
         {
@@ -111,7 +125,6 @@ public class ListeningState : GameState
                 Puzzle.Instance.StartCoroutine(Puzzle.Instance.Unpause());
                 Debug.Log("WRONG");
                 gm.SpeechText = null;
-                timeElapsed = 0f;
             }
         }
 

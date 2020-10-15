@@ -29,6 +29,9 @@ public class GameManager : MonoBehaviour
 
     public UnityEvent OnInstructionFinished;
 
+    public bool checkingTimeOut;
+    public float timeOutTimer;
+
     private void Awake()
     {
         instance = this;

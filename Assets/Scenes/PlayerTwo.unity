@@ -214,6 +214,7 @@ MonoBehaviour:
   OnUserStartedSpeaking:
     m_PersistentCalls:
       m_Calls: []
+  isOpened: 0
 --- !u!4 &76600040
 Transform:
   m_ObjectHideFlags: 0
@@ -343,7 +344,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   puzzleClips:
   - {fileID: 8300000, guid: 2b61e4a1281403f4fb7781b210294149, type: 3}
+  - {fileID: 8300000, guid: f706df2dca70698459bad036584c0c24, type: 3}
   puzzleAnswers:
+  - rock
   - ritual
   endOfDemo: {fileID: 8300000, guid: db9056d4a555efa4c8b3fff4d8fc0afe, type: 3}
 --- !u!4 &718635242
@@ -486,6 +489,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speechInput: 32
+  OnInstructionFinished:
+    m_PersistentCalls:
+      m_Calls: []
+  checkingTimeOut: 0
+  timeOutTimer: 0
 --- !u!4 &870054549
 Transform:
   m_ObjectHideFlags: 0
@@ -530,18 +538,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbfaacdf2c80faf44bfe4db5b95c248b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  congrats: {fileID: 8300000, guid: 909498b98d41b2448b24d148bcafff43, type: 3}
   startAudio:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  understand: {fileID: 0}
-  repeat: {fileID: 8300000, guid: 10b062c1c05dd0042b5a0a433dc3a2c8, type: 3}
-  didntCatch: {fileID: 0}
-  wrong: {fileID: 8300000, guid: 1fbfeea10ee20c3448eab69662f9b3f5, type: 3}
-  correct: {fileID: 8300000, guid: 7302c83ac46005147bbb57361e2047d2, type: 3}
+  - {fileID: 8300000, guid: 019bc18d868fa4e4f88562acdb7eaf4c, type: 3}
+  - {fileID: 8300000, guid: 7f3fe823a4716b740873eb2847ce7d80, type: 3}
   puzzleIntros:
   - {fileID: 8300000, guid: d9f481dded3de554bbaadf36310b8618, type: 3}
-  timeOutLimit: 5
+  - {fileID: 8300000, guid: 67481dc721b4b4643ad501e4ce246d0e, type: 3}
+  understand: {fileID: 8300000, guid: 8fff004b322bc38438311bdadea9f524, type: 3}
+  repeat: {fileID: 8300000, guid: 34a220e8a1b121140b337cb8375dbde7, type: 3}
+  didntCatch: {fileID: 8300000, guid: d8c2b370eea107045876c43a7172d7b6, type: 3}
+  goodFeedback: {fileID: 8300000, guid: 0efbfeee15d4ddc4fb84f57125d1d068, type: 3}
+  wrong: {fileID: 8300000, guid: 1fbfeea10ee20c3448eab69662f9b3f5, type: 3}
+  correct: {fileID: 8300000, guid: 7302c83ac46005147bbb57361e2047d2, type: 3}
+  readyToListen: 0
+  isListening: 0
+  timeOutLimit: 15
 --- !u!82 &1114174879
 AudioSource:
   m_ObjectHideFlags: 0

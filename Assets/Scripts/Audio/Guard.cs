@@ -36,7 +36,7 @@ public class Guard : MonoBehaviour
     bool continueLoop = false;
     public bool readyToListen;
     public bool isListening;
-    public float timeOutLimit = 10.0f;
+    public float timeOutLimit = 15.0f;
     int currentSegment = 0;
 
     internal UnityEvent OnDidntCatch;
@@ -82,7 +82,10 @@ public class Guard : MonoBehaviour
             Debug.Log("Do you understand?");
             audioSource.clip = understand;
             audioSource.Play();
-            readyToListen = true; 
+            readyToListen = true;
+
+            GameManager.Instance.checkingTimeOut = true;
+            GameManager.Instance.timeOutTimer = 0f;
 
             yield return new WaitUntil(() => continueLoop == true);
         }
