@@ -51,13 +51,18 @@ public class Puzzle : MonoBehaviour
         audioSource.Play();
     }
 
+    public string GetCorrectPhrase(int _currentPuzzle)
+    {
+        return puzzleAnswers[_currentPuzzle];
+    }
     public void Pause()
     {
         audioSource.Pause();
     }
 
-    public void Unpause()
+    public IEnumerator Unpause()
     {
+        yield return new WaitForSeconds(2.2f);
         audioSource.UnPause();
     }
 

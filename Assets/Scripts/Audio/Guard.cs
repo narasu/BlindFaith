@@ -19,6 +19,7 @@ public class Guard : MonoBehaviour
 
     #region Audio
     private AudioSource audioSource;
+    public AudioClip congrats;
     public AudioClip[] startAudio; //audio for beginning of the game
     public AudioClip[] puzzleIntros;
 
@@ -33,6 +34,7 @@ public class Guard : MonoBehaviour
     
     internal bool introFinished;
     bool continueLoop = false;
+    public bool readyToListen;
     public bool isListening;
     public float timeOutLimit = 10.0f;
     int currentSegment = 0;
@@ -54,14 +56,21 @@ public class Guard : MonoBehaviour
         OnDidntCatch.AddListener(() => StartCoroutine(React(2)));
         OnTimeout.AddListener(() => continueLoop = true);
 
+        audioSource.clip = congrats;
+        audioSource.Play();
+
         StartCoroutine(IntroduceGame());
     }
 
+
+
     public IEnumerator IntroduceGame()
     {
-        
+        yield return new WaitForSeconds(congrats.length + 0.5f);
+
         while (currentSegment < startAudio.Length)
         {
+            readyToListen = false;
             continueLoop = false;
             Debug.Log("Introduction segment " + currentSegment);
             //play instruction segment
@@ -73,6 +82,7 @@ public class Guard : MonoBehaviour
             Debug.Log("Do you understand?");
             audioSource.clip = understand;
             audioSource.Play();
+            readyToListen = true; 
 
             yield return new WaitUntil(() => continueLoop == true);
         }
@@ -113,14 +123,14 @@ public class Guard : MonoBehaviour
         {
             case 0:
                 audioSource.PlayOneShot(goodFeedback);
-                yield return new WaitForSeconds(goodFeedback.length + 0.2f);
+                yield return new WaitForSeconds(goodFeedback.length + 0.6f);
                 Debug.Log("Good");
                 GotoNextSegment();
                 yield break;
             case 1:
                 Debug.Log("I repeat");
                 audioSource.PlayOneShot(repeat);
-                yield return new WaitForSeconds(repeat.length + 0.2f);
+                yield return new WaitForSeconds(repeat.length + 0.4f);
                 continueLoop = true;
                 yield break;
             case 2:
@@ -136,6 +146,7 @@ public class Guard : MonoBehaviour
     public void IntroducePuzzle(int _currentPuzzle)
     {
         audioSource.clip = puzzleIntros[_currentPuzzle];
+        Debug.Log("introducing puzzle " + _currentPuzzle);
         audioSource.Play();
     }
     //correct or incorrect

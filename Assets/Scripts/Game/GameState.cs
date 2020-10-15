@@ -21,9 +21,6 @@ public abstract class GameState
 //StartState - start of game
 public class StartState : GameState
 {
-    float t = 0f;
-    bool dict = false;
-
     public override void Enter()
     {
         
@@ -31,7 +28,7 @@ public class StartState : GameState
     public override void Update()
     {
         // start voice input
-        if (Input.GetKeyDown(gm.speechInput) && !DictationEngine.Instance.isOpened)
+        if (Input.GetKeyDown(gm.speechInput) && !DictationEngine.Instance.isOpened && Guard.Instance.readyToListen)
         {
             DictationEngine.Instance.StartDictationEngine();
             Debug.Log("Listening...");
@@ -55,12 +52,11 @@ public class StartState : GameState
 // IntroState - introduction of puzzle, instructions, maybe some narrative exposition
 public class IntroState : GameState
 {
-    bool dict = false;
-    float timeElapsed = 0f;
+    float timeElapsed;
     public override void Enter()
     {
         Guard.Instance.IntroducePuzzle(gm.CurrentPuzzle);
-        gm.SpeechText = null;
+        timeElapsed = 0f;
     }
     public override void Update()
     {
@@ -69,13 +65,13 @@ public class IntroState : GameState
         // go to next state after clip is done
         if (timeElapsed >= Guard.Instance.GetClipLength() + 0.5f)
         {
+            Debug.Log(timeElapsed);
             owner.GotoState(GameStateType.Listening);
         }
     }
     public override void Exit()
     {
         Guard.Instance.StopTalking();
-        DictationEngine.Instance.CloseDictationEngine();
     }
 }
 // ListeningState - user is listening to sound fragment
@@ -87,20 +83,18 @@ public class ListeningState : GameState
     public override void Enter()
     {
         Puzzle.Instance.StartPuzzle(gm.CurrentPuzzle);
+        gm.CorrectPhrase = Puzzle.Instance.GetCorrectPhrase(gm.CurrentPuzzle);
+        gm.SpeechText = null;
     }
     public override void Update()
     {
         timeElapsed += Time.deltaTime;
 
         // start voice input
-        if (Input.GetKeyDown(gm.speechInput))
+        if (Input.GetKeyDown(gm.speechInput) && !DictationEngine.Instance.isOpened)
         {
-            if (!dict)
-            {
-                DictationEngine.Instance.StartDictationEngine();
-                dict = true;
-            }
-            Puzzle.Instance.SetVolume(0.2f);
+            DictationEngine.Instance.StartDictationEngine();
+            Puzzle.Instance.Pause();
         }
 
         //check if user has given the correct answer
@@ -112,8 +106,9 @@ public class ListeningState : GameState
             }
             else
             {
+                DictationEngine.Instance.CloseDictationEngine();
                 Guard.Instance.EvaluateAnswer(false);
-                Puzzle.Instance.SetVolume(0.7f);
+                Puzzle.Instance.StartCoroutine(Puzzle.Instance.Unpause());
                 Debug.Log("WRONG");
                 gm.SpeechText = null;
                 timeElapsed = 0f;
@@ -131,10 +126,12 @@ public class ListeningState : GameState
 
 public class CorrectState : GameState
 {
-    float t = 0;
+    float t;
     bool done = false;
     public override void Enter()
     {
+        done = false;
+        t = 0f;
         Guard.Instance.EvaluateAnswer(true);
     }
     public override void Update()
@@ -144,7 +141,16 @@ public class CorrectState : GameState
         {
             done = true;
             Debug.Log("done");
-            Puzzle.Instance.PlayDemoEndClip();
+            // DIRTY HACK BECAUSE NO TIME AND IT'S JUST A PROTOTYPE SO WHATEVER
+            if (gm.CurrentPuzzle == 1)
+            {
+                Puzzle.Instance.PlayDemoEndClip();
+            }
+            if (gm.CurrentPuzzle == 0)
+            {
+                gm.CurrentPuzzle = 1;
+                owner.GotoState(GameStateType.Intro); 
+            }
         }
         // when sound is done playing, increment currentPuzzle and goto IntroState
     }
