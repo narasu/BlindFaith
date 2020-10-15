@@ -16,7 +16,7 @@ public class MainMenuScript : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            SceneManager.LoadScene(sceneToSwapTo);
+            SceneManager.LoadScene(1);
         }
     }
 }
